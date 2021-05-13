@@ -40,9 +40,8 @@ void Face::initializeValues()
 	cv::String imgsPath = mDataPath + "\\faceImages";
 	scanDB(imgsPath);
 
-	double mMatchingThreshold = 0.7;
-
-
+	double mMatchingThreshold = 0.6;
+	
 }
 
 void Face::scanDB(cv::String & imgsPath)
@@ -127,8 +126,8 @@ void Face::runFaceRecognition(cv::Mat & frame, unsigned long frame_number)
 	{
 		for (auto& face : mFaceDetails)
 		{
-			cv::rectangle(frame, face.faceRect, cv::Scalar(100, 60, 255), 2, 16);
-			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(100, 60, 255), 1, 16);
+			cv::rectangle(frame, face.faceRect, cv::Scalar(180, 255, 50), 2, 16);
+			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(180, 255, 50), 1, 16);
 		}
 	}
 
