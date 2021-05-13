@@ -11,7 +11,7 @@ int main()
 	const std::string windowName = "Output frame";
 
 	//Create a Face class object
-	Face faceObject(data_path, true, false, true);
+	Face faceObject(data_path, false, true);
 
     //Create video capture object and open video source
     cv::VideoCapture cap(video_src);
@@ -27,7 +27,7 @@ int main()
             if(cap.read(frame))
             {
 
-				faceObject.runFaceRecognition(frame, frame_number);
+				faceObject.runFaceRecognition(frame);
 				         
 				cv::imshow(windowName, frame);
 				char k = cv::waitKey(1);

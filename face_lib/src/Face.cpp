@@ -1,9 +1,8 @@
 #include "Face.h"
 
-Face::Face(std::string _dataPath, bool _detectFaces, bool _detectLandmarks, bool _recognizeFaces)
+Face::Face(std::string _dataPath, bool _detectLandmarks, bool _recognizeFaces)
 {
 	mDataPath = _dataPath;
-	mDetectFaces = _detectFaces;
 	mDetectLandmarks = _detectLandmarks;
 	mRecognizeFaces = _recognizeFaces;
 	
@@ -21,27 +20,14 @@ void Face::initializeValues()
 
 	cv::dnn::Net detectionModel = mLoadFaceModels->getDetectionModel();
 	cv::dnn::Net landmarksModel = mLoadFaceModels->getLandmarksModel();
-	cv::dnn::Net embeddingsModel =mLoadFaceModels->getEmbeddingsModel();
+	cv::dnn::Net embeddingsModel = mLoadFaceModels->getEmbeddingsModel();
 	
-	const double conf = 0.4;
-	const int frame_to_skip = 5;
-	std::vector<std::string> only_class_to_detect = { "face" };
-	mFaceDetector = std::make_unique<FaceDetector>(detectionModel, conf, only_class_to_detect, frame_to_skip);
-
-	mFaceLandmarksDetector = std::make_unique<FaceLandmark>(landmarksModel);
-
-	mFaceEmbedder = std::make_unique<FaceEmbedding>(embeddingsModel);
-	
-	const int distance_threshold = 50;
-	const int max_skipped_frames = 25;
-	const int history_size = 60;
-	mTracker = std::make_unique<CentroidTracker>(distance_threshold, max_skipped_frames, history_size);
+	mFaceDNN = std::make_unique<FaceDNN>(detectionModel, embeddingsModel, landmarksModel);
 
 	cv::String imgsPath = mDataPath + "\\faceImages";
 	scanDB(imgsPath);
 
 	double mMatchingThreshold = 0.6;
-	
 }
 
 void Face::scanDB(cv::String & imgsPath)
@@ -69,8 +55,8 @@ void Face::scanDB(cv::String & imgsPath)
 			{
 				tempPath.erase(period_idx);
 			}
-			mFaceDetector->getDetectedRects(img, mDBFaceDetails);
-			mFaceEmbedder->getEmbeddedFeatures(mDBFaceDetails);
+
+			mFaceDNN->getFeatures(img, mDBFaceDetails);
 
 			if (mDBFaceDetails.size()) { mDBFaceDetails[i].faceID = tempPath; }
 			i++;
@@ -78,13 +64,17 @@ void Face::scanDB(cv::String & imgsPath)
 	}
 }
 
-void Face::performMatching()
+void Face::performMatching(cv::Mat &frame, bool drawFaceAndFaceID)
 {
 	if (mFaceDetails.size())
 	{
 		for (auto& face : mFaceDetails)
 		{
 			face.faceID = getFaceId(face.embeddingMat);
+
+			cv::rectangle(frame, face.faceRect, cv::Scalar(180, 255, 50), 2, 16);
+			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(180, 255, 50), 1, 16);
+
 		}
 	}
 }
@@ -99,7 +89,6 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 	{
 		cv::Mat dbFaceEmbeddingMat = mDBFaceDetails[i].embeddingMat;
 		double dotProduct = embeddingMat.dot(dbFaceEmbeddingMat);
-
 		if (dotProduct > maxMatchConf && dotProduct > mMatchingThreshold)
 		{
 			maxMatchConf = dotProduct;
@@ -114,21 +103,10 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 	return faceId;
 }
 
-void Face::runFaceRecognition(cv::Mat & frame, unsigned long frame_number)
+void Face::runFaceRecognition(cv::Mat & frame)
 {
 	mFaceDetails.clear();
-	mFaceDetector->getDetectedRects(frame, mFaceDetails, frame_number);
-	mFaceEmbedder->getEmbeddedFeatures(mFaceDetails);
+	mFaceDNN->getFeatures(frame, mFaceDetails);
 
-	performMatching();
-	
-	if (mFaceDetails.size())
-	{
-		for (auto& face : mFaceDetails)
-		{
-			cv::rectangle(frame, face.faceRect, cv::Scalar(180, 255, 50), 2, 16);
-			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(180, 255, 50), 1, 16);
-		}
-	}
-
+	performMatching(frame, true);
 }
