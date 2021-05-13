@@ -1,29 +1,45 @@
 #ifndef FACE_H
 #define FACE_H
 
-#include <opencv2\opencv.hpp>
+#include "FaceDetails.h"
+#include "FaceDetector.h"
+#include "FaceLandmark.h"
+#include "FaceEmbedding.h"
+#include "CentroidTracker.h"
+#include "LoadModel.h"
 
-struct Face
+class Face
 {
-	cv::Rect faceRect;
-	cv::Mat faceImg;
-	std::vector<cv::Point> faceLandmarks;
-	std::vector<double> faceEmbeddings;
+	public:
+		//methods
+		Face(std::string _dataPath, bool _detectFaces=true, bool _detectLandmarks=false, bool _recognizeFaces=true);
+		~Face();
 
+		void runFaceRecognition(cv::Mat& frame, unsigned long frame_number);
 
-	
-	/*
-		 TODO  - align the face, classify as male/female, detect age and emotion
+	private:
+		//methods
+		void initializeValues();
+		void scanDB(cv::String& imgsPath);
+		void performMatching();
+		std::string getFaceId(cv::Mat& embeddingMat);
 
-	bool matched;
-	std::string matchedId;
-	double matchedConfidence;
-	bool isFaceAligned;
-	bool isMale;
-	int age;
-	std::string emotion;
-	
-	*/
+	private:
+		//members
+		std::string mDataPath;
+		bool mDetectFaces;
+		bool mDetectLandmarks;
+		bool mRecognizeFaces;
+		std::unique_ptr<LoadFaceModel> mLoadFaceModels;
+		std::unique_ptr<CentroidTracker> mTracker;
+		std::unique_ptr<FaceDetector> mFaceDetector;
+		std::unique_ptr<FaceLandmark> mFaceLandmarksDetector;
+		std::unique_ptr<FaceEmbedding> mFaceEmbedder;
+		std::vector<FaceDetails> mFaceDetails;
+		std::vector<FaceDetails> mDBFaceDetails;
+		double mMatchingThreshold;
+
 };
+
 
 #endif

@@ -1,15 +1,14 @@
 #ifndef FACE_EMBEDDING_H
 #define FACE_EMBEDDING_H
 
-#include "Face.h"
-
+#include "FaceDetails.h"
 
 class FaceEmbedding {
 	public:
 		FaceEmbedding(cv::dnn::Net& model);
 		~FaceEmbedding();
 
-		void getEmbeddedFeatures(std::vector<Face>& faces);
+		void getEmbeddedFeatures(std::vector<FaceDetails>& faces);
 
 	private:
 		void warmUp();
@@ -17,16 +16,10 @@ class FaceEmbedding {
 	private:
 		cv::dnn::Net mNet;
 		cv::Size mNetInputSize;
-		double mNmsThreshold;
 		double mScaleFactor;
 		cv::Scalar mMeanToSubtract;
 		bool mCrop{};
 		bool mSwapRB{};
-		std::vector<cv::String> mOutNames;
-
-		int mFrameToSkip;
-		std::string mOutLayerType;
-
 };
 
 #endif

@@ -8,17 +8,13 @@ FaceEmbedding::FaceEmbedding(cv::dnn::Net& model)
 	mMeanToSubtract = cv::Scalar(127.5,127.5,127.5);
 	mCrop = false;
 	mSwapRB = false;
-
-	mOutNames = mNet.getUnconnectedOutLayersNames();
-	std::vector<int> outLayers = mNet.getUnconnectedOutLayers();
-	mOutLayerType = mNet.getLayer(outLayers[0])->type;
 }
 
 FaceEmbedding::~FaceEmbedding()
 {
 }
 
-void FaceEmbedding::getEmbeddedFeatures(std::vector<Face>& faces)
+void FaceEmbedding::getEmbeddedFeatures(std::vector<FaceDetails>& faces)
 {
 	if (faces.size())
 	{
@@ -39,6 +35,9 @@ void FaceEmbedding::getEmbeddedFeatures(std::vector<Face>& faces)
 			double* data = (double*)scores.data;
 			std::vector<double> embedding(data, data + out_size);
 			faceObject.faceEmbeddings = embedding;
+			cv::Mat tempMat = cv::Mat(embedding).reshape(0, embedding.size());
+			tempMat.convertTo(tempMat, CV_64F);
+			faceObject.embeddingMat = tempMat;
 		}
 	}
 }
@@ -50,9 +49,9 @@ warm up the network with a test image
 void FaceEmbedding::warmUp()
 {
 	cv::Mat test_img = cv::Mat(mNetInputSize, CV_8UC3, cv::Scalar(0));
-	Face faceObject;
+	FaceDetails faceObject;
 	faceObject.faceRect = cv::Rect(1, 1, mNetInputSize.width - 1, mNetInputSize.height - 1);
 	faceObject.faceImg = test_img(faceObject.faceRect);
-	std::vector<Face> faces = { faceObject };
+	std::vector<FaceDetails> faces = { faceObject };
 	getEmbeddedFeatures(faces);
 }

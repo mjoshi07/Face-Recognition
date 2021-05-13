@@ -14,15 +14,74 @@ FaceDetector::FaceDetector(cv::dnn::Net& model,double confidence, std::vector<st
 	mSwapRB = false;
 	mClassNames = {"no-face", "face"};
 
-	//mOutNames = mNet.getUnconnectedOutLayersNames();
-	//std::vector<int> outLayers = mNet.getUnconnectedOutLayers();
-	//mOutLayerType = mNet.getLayer(outLayers[0])->type;
-
 	warmUp();
 }
 
 FaceDetector::~FaceDetector()
 {
+}
+
+void FaceDetector::getDetectedRects(cv::Mat & img, std::vector<FaceDetails>& faces, unsigned long  frame_number)
+{
+	std::vector<detected_object> detected_objects = {};
+	
+	if (!img.empty())
+	{
+		dlib::matrix<dlib::rgb_pixel> dlib_img;
+		assign_image(dlib_img, dlib::cv_image<dlib::bgr_pixel>(img));
+
+		if (frame_number % mFrameToSkip == 0)
+		{
+			//run detector and get rects
+			mDlibTrackerList.clear();
+			detected_objects = detect(img);
+
+			for (auto& obj : detected_objects)
+			{
+				std::string obj_class = obj.getClass();
+				FaceDetails faceObject;
+				if (obj_class != "")
+				{
+					cv::Rect obj_rect = obj.getRect();
+
+					dlib::correlation_tracker corr_tracker;
+					corr_tracker.start_track(dlib_img, dlib::centered_rect(dlib::point(obj_rect.x + obj_rect.width*0.5, obj_rect.y + obj_rect.height*0.5), obj_rect.width, obj_rect.height));
+					mDlibTrackerList.push_back(corr_tracker);
+					faceObject.faceRect = obj_rect;
+					faceObject.faceImg = img(obj_rect);
+					faces.push_back(faceObject);
+				}
+			}
+		}
+		else
+		{
+			//get rects from dlib tracker
+			for (dlib::correlation_tracker &corr_track : mDlibTrackerList)
+			{
+				FaceDetails faceObject;
+				corr_track.update(dlib_img);
+				dlib::rectangle rect = corr_track.get_position();
+
+				int width = corr_track.get_position().width();
+				int height = corr_track.get_position().height();
+				int x = corr_track.get_position().right() - width;
+				int y = corr_track.get_position().bottom() - height;
+				cv::Rect rec(x, y, width, height);
+				faceObject.faceRect = rec;
+				faceObject.faceImg = img(rec);
+				faces.push_back(faceObject);
+			}
+		}
+	}
+}
+
+/*
+warm up the network with a test image
+*/
+void FaceDetector::warmUp()
+{
+	cv::Mat test_img = cv::Mat(mNetInputSize, CV_8UC3, cv::Scalar(0));
+	detect(test_img);
 }
 
 std::vector<detected_object> FaceDetector::detect(cv::Mat & img)
@@ -34,7 +93,7 @@ std::vector<detected_object> FaceDetector::detect(cv::Mat & img)
 		int frameWidth = img.cols;
 
 		cv::Mat inputBlob = cv::dnn::blobFromImage(img, mScaleFactor, mNetInputSize, mMeanToSubtract, mSwapRB, mCrop);
-		
+
 		mNet.setInput(inputBlob);
 		cv::Mat out = mNet.forward();
 
@@ -59,67 +118,4 @@ std::vector<detected_object> FaceDetector::detect(cv::Mat & img)
 	}
 
 	return detections;
-}
-
-void FaceDetector::getDetectedRects(cv::Mat & img, std::vector<Face>& faces, int frame_number)
-{
-	std::vector<detected_object> detected_objects = {};
-	
-	if (!img.empty())
-	{
-		dlib::matrix<dlib::rgb_pixel> dlib_img;
-		assign_image(dlib_img, dlib::cv_image<dlib::bgr_pixel>(img));
-
-		if (frame_number % mFrameToSkip == 0)
-		{
-			//run detector and get rects
-			mDlibTrackerList.clear();
-			detected_objects = detect(img);
-
-			for (auto& obj : detected_objects)
-			{
-				std::string obj_class = obj.getClass();
-				Face faceObject;
-				if (obj_class != "")
-				{
-					cv::Rect obj_rect = obj.getRect();
-
-					dlib::correlation_tracker corr_tracker;
-					corr_tracker.start_track(dlib_img, dlib::centered_rect(dlib::point(obj_rect.x + obj_rect.width*0.5, obj_rect.y + obj_rect.height*0.5), obj_rect.width, obj_rect.height));
-					mDlibTrackerList.push_back(corr_tracker);
-					faceObject.faceRect = obj_rect;
-					faceObject.faceImg = img(obj_rect);
-					faces.push_back(faceObject);
-				}
-			}
-		}
-		else
-		{
-			//get rects from dlib tracker
-			for (dlib::correlation_tracker &corr_track : mDlibTrackerList)
-			{
-				Face faceObject;
-				corr_track.update(dlib_img);
-				dlib::rectangle rect = corr_track.get_position();
-
-				int width = corr_track.get_position().width();
-				int height = corr_track.get_position().height();
-				int x = corr_track.get_position().right() - width;
-				int y = corr_track.get_position().bottom() - height;
-				cv::Rect rec(x, y, width, height);
-				faceObject.faceRect = rec;
-				faceObject.faceImg = img(rec);
-				faces.push_back(faceObject);
-			}
-		}
-	}
-}
-
-/*
-warm up the network with a test image
-*/
-void FaceDetector::warmUp()
-{
-	cv::Mat test_img = cv::Mat(mNetInputSize, CV_8UC3, cv::Scalar(0));
-	detect(test_img);
 }

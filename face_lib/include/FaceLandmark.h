@@ -1,7 +1,7 @@
 #ifndef FACE_LANDMARK_H
 #define FACE_LANDMARK_H
 
-#include "Face.h"
+#include "FaceDetails.h"
 
 
 class FaceLandmark {
@@ -9,7 +9,7 @@ class FaceLandmark {
 		FaceLandmark(cv::dnn::Net& model, bool draw_landmarks=true);
 		~FaceLandmark();
 
-		void getFaceLandmarks(cv::Mat& img, std::vector<Face>& faces);
+		void getFaceLandmarks(cv::Mat& img, std::vector<FaceDetails>& faces);
 
 	private:
 		void warmUp();

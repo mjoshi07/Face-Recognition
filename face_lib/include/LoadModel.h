@@ -1,13 +1,12 @@
 #ifndef LOAD_MODEL_H
 #define LOAD_MODEL_H
 
-#include "ModelParameters.h"
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn.hpp>
 
 class LoadFaceModel
 {
 	public:
+		LoadFaceModel(){}
 		LoadFaceModel(std::string data_path, bool loadDetectionModel=true, bool loadLandmarksModel=false, bool loadEmbeddingsModel=false);
 		~LoadFaceModel();
 		
