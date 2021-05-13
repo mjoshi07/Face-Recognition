@@ -13,8 +13,8 @@ int main()
 	//Create a Face class object
 	Face faceObject(data_path, true, false, true);
 
-    //Create video capture object and open video source[webcam in this case]
-    cv::VideoCapture cap(0);
+    //Create video capture object and open video source
+    cv::VideoCapture cap(video_src);
     cv::Mat frame;
 
 	//Create a window to display the output frame
