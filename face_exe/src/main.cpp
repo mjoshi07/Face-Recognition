@@ -1,14 +1,13 @@
 #include "Face.h"
 
-
 int main()
 {    
 	// path to data folder where DNN models and database for face recognition is stored
-	const std::string data_path = "..//..//data";
+	const std::string data_path = "..\\..\\data";
 
 	unsigned long frame_number = 0;
 
-	const std::string video_src = data_path + "//video//project_video.mp4";
+	const std::string video_src = data_path + "//video//test_video.mp4";
 	const std::string windowName = "Output frame";
 
 	//Create a Face class object
@@ -48,7 +47,7 @@ int main()
 			}
         }
     }
-
+	std::cin.get();
     return 0;
 }
 

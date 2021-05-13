@@ -30,7 +30,7 @@ class FaceDetector{
 		FaceDetector(cv::dnn::Net& model,double confidence=0.3, std::vector<std::string> only_classes_to_detect = {}, const int frame_to_skip = 2);
 		~FaceDetector();
 
-		void getDetectedRects(cv::Mat& img, std::vector<FaceDetails>& faces, unsigned long  frame_number=1);
+		void getDetectedRects(cv::Mat& img, std::vector<FaceDetails>& faces, unsigned long  frame_number=0);
 
 	private:
 		void warmUp();

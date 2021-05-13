@@ -40,7 +40,7 @@ void Face::initializeValues()
 	cv::String imgsPath = mDataPath + "\\faceImages";
 	scanDB(imgsPath);
 
-	double mMatchingThreshold = 0.6;
+	double mMatchingThreshold = 0.7;
 
 
 }
@@ -70,12 +70,10 @@ void Face::scanDB(cv::String & imgsPath)
 			{
 				tempPath.erase(period_idx);
 			}
-
 			mFaceDetector->getDetectedRects(img, mDBFaceDetails);
 			mFaceEmbedder->getEmbeddedFeatures(mDBFaceDetails);
 
 			if (mDBFaceDetails.size()) { mDBFaceDetails[i].faceID = tempPath; }
-
 			i++;
 		}
 	}
@@ -96,22 +94,22 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 {
 	std::string faceId = "unknown";
 
-	int minMatchIdx(-1);
-	double minMatch(1000000000.0);
+	int maxMatchIdx(-1);
+	double maxMatchConf(-1);
 	for (int i = 0; i < mDBFaceDetails.size(); i++)
 	{
 		cv::Mat dbFaceEmbeddingMat = mDBFaceDetails[i].embeddingMat;
 		double dotProduct = embeddingMat.dot(dbFaceEmbeddingMat);
 
-		if (dotProduct < minMatch)
+		if (dotProduct > maxMatchConf && dotProduct > mMatchingThreshold)
 		{
-			minMatch = dotProduct;
-			minMatchIdx = i;
+			maxMatchConf = dotProduct;
+			maxMatchIdx = i;
 		}
 	}
-	if(minMatchIdx != -1)
+	if(maxMatchIdx != -1)
 	{
-		faceId = mDBFaceDetails[minMatchIdx].faceID;
+		faceId = mDBFaceDetails[maxMatchIdx].faceID;
 	}
 
 	return faceId;
@@ -129,8 +127,8 @@ void Face::runFaceRecognition(cv::Mat & frame, unsigned long frame_number)
 	{
 		for (auto& face : mFaceDetails)
 		{
-			cv::rectangle(frame, face.faceRect, cv::Scalar(255, 0, 120), 2, 16);
-			cv::putText(frame, face.faceID, face.faceRect.tl(), cv::FONT_HERSHEY_COMPLEX, 1.0, cv::Scalar(255, 0, 120), 1, 16);
+			cv::rectangle(frame, face.faceRect, cv::Scalar(100, 60, 255), 2, 16);
+			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(100, 60, 255), 1, 16);
 		}
 	}
 
