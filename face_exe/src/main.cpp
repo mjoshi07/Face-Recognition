@@ -14,7 +14,7 @@ int main()
 	Face faceObject(data_path, true, false, true);
 
     //Create video capture object and open video source
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(video_src);
     cv::Mat frame;
 
 	//Create a window to display the output frame
@@ -47,7 +47,6 @@ int main()
 			}
         }
     }
-	std::cin.get();
     return 0;
 }
 
