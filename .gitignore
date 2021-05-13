@@ -1,3 +1,4 @@
 /build
-/models
-/data
+/data/faceImages
+/data/models
+/data/video
