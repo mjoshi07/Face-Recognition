@@ -114,21 +114,23 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 	return faceId;
 }
 
+void Face::drawFaces(cv::Mat& frame, cv::Scalar color)
+{
+	if (mFaceDetails.size())
+	{
+		for (auto& face : mFaceDetails)
+		{
+			cv::rectangle(frame, face.faceRect, color, 2, 16);
+			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, color, 1, 16);
+		}
+	}
+}
+
 void Face::runFaceRecognition(cv::Mat & frame, unsigned long frame_number)
 {
 	mFaceDetails.clear();
 	mFaceDetector->getDetectedRects(frame, mFaceDetails, frame_number);
 	mFaceEmbedder->getEmbeddedFeatures(mFaceDetails);
-
 	performMatching();
-	
-	if (mFaceDetails.size())
-	{
-		for (auto& face : mFaceDetails)
-		{
-			cv::rectangle(frame, face.faceRect, cv::Scalar(180, 255, 50), 2, 16);
-			cv::putText(frame, face.faceID, cv::Point(face.faceRect.x, face.faceRect.y - 5), cv::FONT_HERSHEY_COMPLEX, 0.6, cv::Scalar(180, 255, 50), 1, 16);
-		}
-	}
-
+	drawFaces(frame);
 }
