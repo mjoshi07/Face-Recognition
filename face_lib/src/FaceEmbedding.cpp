@@ -35,9 +35,10 @@ void FaceEmbedding::getEmbeddedFeatures(std::vector<FaceDetails>& faces)
 			double* data = (double*)scores.data;
 			std::vector<double> embedding(data, data + out_size);
 			faceObject.faceEmbeddings = embedding;
-			cv::Mat tempMat = cv::Mat(embedding).reshape(0, embedding.size());
-			tempMat.convertTo(tempMat, CV_64F);
+			cv::Mat tempMat = cv::Mat(1, embedding.size(), CV_64F);
+			std::memcpy(tempMat.data, embedding.data(), embedding.size() * sizeof(double));
 			faceObject.embeddingMat = tempMat;
+			faceObject.selfDotProduct = tempMat.dot(tempMat);
 		}
 	}
 }
