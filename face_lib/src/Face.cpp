@@ -84,12 +84,12 @@ void Face::performMatching()
 	{
 		for (auto& face : mFaceDetails)
 		{
-			face.faceID = getFaceId(face.embeddingMat);
+			face.faceID = getFaceId(face.embeddingMat, face.selfDotProduct);
 		}
 	}
 }
 
-std::string Face::getFaceId(cv::Mat& embeddingMat)
+std::string Face::getFaceId(cv::Mat& embeddingMat, double embeddingMatSelfDotProduct)
 {
 	std::string faceId = "unknown";
 
@@ -99,8 +99,10 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 	{
 		cv::Mat dbFaceEmbeddingMat = mDBFaceDetails[i].embeddingMat;
 		double dotProduct = embeddingMat.dot(dbFaceEmbeddingMat);
+		double dbFaceSelfDotProduct = mDBFaceDetails[i].selfDotProduct;
+		double cosineDistance = dotProduct / (std::sqrtl(embeddingMatSelfDotProduct)*std::sqrtl(dbFaceSelfDotProduct));
 
-		if (dotProduct > maxMatchConf && dotProduct > mMatchingThreshold)
+		if (cosineDistance > maxMatchConf && cosineDistance > mMatchingThreshold)
 		{
 			maxMatchConf = dotProduct;
 			maxMatchIdx = i;
