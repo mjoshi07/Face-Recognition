@@ -22,7 +22,7 @@ class Face
 		void initializeValues();
 		void scanDB(cv::String& imgsPath);
 		void performMatching();
-		std::string getFaceId(cv::Mat& embeddingMat);
+		std::string getFaceId(cv::Mat& embeddingMat, double embeddingMatSelfDotProduct);
 		void drawFaces(cv::Mat& frame, cv::Scalar bboxColor = cv::Scalar(180, 255, 50));
 
 	private:
