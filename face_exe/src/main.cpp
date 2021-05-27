@@ -2,10 +2,10 @@
 
 int main()
 {    
-	// path to data folder where DNN models and database for face recognition is stored
-	const std::string data_path = "..\\..\\data";
+	// TODO - checkout dlib face recognition model
 
-	unsigned long frame_number = 0;
+	//Path to data folder where DNN models and database for face recognition is stored
+	const std::string data_path = "..\\..\\data";
 
 	const std::string video_src = data_path + "//video//test_video.mp4";
 	const std::string windowName = "Output frame";
@@ -39,7 +39,6 @@ int main()
 				{
 					cv::waitKey(0);
 				}
-				frame_number++;
 			}
 			else
 			{
