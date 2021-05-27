@@ -8,9 +8,10 @@ LoadFaceModel::LoadFaceModel(std::string data_path, bool _loadDetectionModel, bo
 	mLoadLandmarksModel = _loadLandmarksModel;
 	mLoadEmbeddingsModel = _loadEmbeddingsModel;
 
+	if (mLoadEmbeddingsModel) { loadEmbeddingsModel(); }
 	if (mLoadDetectionModel) { loadDetectionModel(); }
 	if (mLoadLandmarksModel) { loadLandmarksModel(); }
-	if (mLoadEmbeddingsModel) { loadEmbeddingsModel(); }
+
 
 }
 
@@ -45,19 +46,19 @@ void LoadFaceModel::loadEmbeddingsModel()
 	mEmbeddingsModel.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_INFERENCE_ENGINE);
 }
 
-cv::dnn::Net LoadFaceModel::getDetectionModel()
+cv::dnn::Net* LoadFaceModel::getDetectionModel()
 {
-	return mDetectionModel;
+	return &mDetectionModel;
 }
 
-cv::dnn::Net LoadFaceModel::getLandmarksModel()
+cv::dnn::Net *LoadFaceModel::getLandmarksModel()
 {
-	return mLandmarksModel;
+	return &mLandmarksModel;
 }
 
-cv::dnn::Net LoadFaceModel::getEmbeddingsModel()
+cv::dnn::Net *LoadFaceModel::getEmbeddingsModel()
 {
-	return mEmbeddingsModel;
+	return &mEmbeddingsModel;
 }
 
 

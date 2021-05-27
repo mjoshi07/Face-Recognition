@@ -10,9 +10,9 @@ class LoadFaceModel
 		LoadFaceModel(std::string data_path, bool loadDetectionModel=true, bool loadLandmarksModel=false, bool loadEmbeddingsModel=false);
 		~LoadFaceModel();
 		
-		cv::dnn::Net getDetectionModel();
-		cv::dnn::Net getLandmarksModel();
-		cv::dnn::Net getEmbeddingsModel();
+		cv::dnn::Net* getDetectionModel();
+		cv::dnn::Net* getLandmarksModel();
+		cv::dnn::Net* getEmbeddingsModel();
 
 	private:
 		void loadDetectionModel();

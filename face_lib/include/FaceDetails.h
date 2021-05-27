@@ -10,6 +10,7 @@ struct FaceDetails
 	std::vector<cv::Point> faceLandmarks;
 	std::vector<double> faceEmbeddings;
 	cv::Mat embeddingMat;
+	double dbSelfDotProduct;
 
 	std::string faceID;
 	double matchingConfidence;

@@ -3,11 +3,11 @@
 FaceDNN::FaceDNN(cv::dnn::Net& _detection_model, cv::dnn::Net& _embeddings_model, cv::dnn::Net& _landmarks_model)
 {
 	// Detection Model details;
-	mDetectionNet = _detection_model;
+	mDetectionNet = std::make_unique<cv::dnn::Net>(_detection_model);
 	mConfidenceThreshold = 0.4;
 
 	// Embeddings Model details;
-	mEmbeddingNet = _embeddings_model;
+	mEmbeddingNet = std::make_unique<cv::dnn::Net>(_embeddings_model);
 }
 
 FaceDNN::~FaceDNN()
@@ -34,7 +34,7 @@ void FaceDNN::getFeatures(cv::Mat & img, std::vector<FaceDetails>& faces)
 				faceObject.faceRect = obj_rect;
 				faceObject.faceImg = img(obj_rect);
 				faceObject.embeddingMat = detectEmbeddings(faceObject.faceImg);
-
+				faceObject.dbSelfDotProduct = faceObject.embeddingMat.dot(faceObject.embeddingMat);
 				faces.push_back(faceObject);
 			}
 		}
@@ -51,8 +51,8 @@ std::vector<detected_object> FaceDNN::detectFaces(cv::Mat & fullImg)
 
 		cv::Mat inputBlob = cv::dnn::blobFromImage(fullImg, 1.0, cv::Size(300,300), cv::Scalar(104.0, 177.0, 123.0), false, false);
 
-		mDetectionNet.setInput(inputBlob);
-		cv::Mat out = mDetectionNet.forward();
+		mDetectionNet->setInput(inputBlob);
+		cv::Mat out = mDetectionNet->forward();
 
 		cv::Mat detectionMat(out.size[2], out.size[3], CV_32F, out.ptr<float>());
 
@@ -84,8 +84,8 @@ cv::Mat FaceDNN::detectEmbeddings(cv::Mat & faceImg)
 
 	cv::Mat inputBlob = cv::dnn::blobFromImage(faceImg, 1.0, cv::Size(96, 112), cv::Scalar(127.5, 127.5, 127.5), false, false);
 
-	mEmbeddingNet.setInput(inputBlob);
-	cv::Mat out = mEmbeddingNet.forward();
+	mEmbeddingNet->setInput(inputBlob);
+	cv::Mat out = mEmbeddingNet->forward();
 
 	cv::Mat scores = out.row(0);
 	long out_size = scores.total();

@@ -36,9 +36,9 @@ class FaceDNN{
 		cv::Mat detectEmbeddings(cv::Mat& face_img);
 
 	private:
-		cv::dnn::Net mDetectionNet;
-		cv::dnn::Net mEmbeddingNet;
-		cv::dnn::Net mLandmarkNet;
+		std::unique_ptr<cv::dnn::Net> mDetectionNet;
+		std::unique_ptr<cv::dnn::Net> mEmbeddingNet;
+		std::unique_ptr<cv::dnn::Net> mLandmarkNet;
 		double mConfidenceThreshold;
 };
 
