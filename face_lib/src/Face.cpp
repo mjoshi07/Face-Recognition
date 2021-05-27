@@ -104,7 +104,7 @@ std::string Face::getFaceId(cv::Mat& embeddingMat, double embeddingMatSelfDotPro
 
 		if (cosineDistance > maxMatchConf && cosineDistance > mMatchingThreshold)
 		{
-			maxMatchConf = dotProduct;
+			maxMatchConf = cosineDistance;
 			maxMatchIdx = i;
 		}
 	}
