@@ -2,6 +2,7 @@
 
 int main()
 {    
+	// TODO - checkout dlib face recognition model
 
 	//Path to data folder where DNN models and database for face recognition is stored
 	const std::string data_path = "..\\..\\data";
