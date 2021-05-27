@@ -18,11 +18,11 @@ void Face::initializeValues()
 	
 	mLoadFaceModels = std::make_unique<LoadFaceModel>(mDataPath,mDetectFaces, mDetectLandmarks, mRecognizeFaces);
 
-	cv::dnn::Net detectionModel = mLoadFaceModels->getDetectionModel();
-	cv::dnn::Net landmarksModel = mLoadFaceModels->getLandmarksModel();
-	cv::dnn::Net embeddingsModel = mLoadFaceModels->getEmbeddingsModel();
+	cv::dnn::Net* detectionModel = mLoadFaceModels->getDetectionModel();
+	cv::dnn::Net* landmarksModel = mLoadFaceModels->getLandmarksModel();
+	cv::dnn::Net* embeddingsModel = mLoadFaceModels->getEmbeddingsModel();
 	
-	mFaceDNN = std::make_unique<FaceDNN>(detectionModel, embeddingsModel, landmarksModel);
+	mFaceDNN = std::make_unique<FaceDNN>(*detectionModel, *embeddingsModel, *landmarksModel);
 
 	cv::String imgsPath = mDataPath + "\\faceImages";
 	scanDB(imgsPath);
@@ -59,6 +59,7 @@ void Face::scanDB(cv::String & imgsPath)
 			mFaceDNN->getFeatures(img, mDBFaceDetails);
 
 			if (mDBFaceDetails.size()) { mDBFaceDetails[i].faceID = tempPath; }
+
 			i++;
 		}
 	}
@@ -89,9 +90,13 @@ std::string Face::getFaceId(cv::Mat& embeddingMat)
 	{
 		cv::Mat dbFaceEmbeddingMat = mDBFaceDetails[i].embeddingMat;
 		double dotProduct = embeddingMat.dot(dbFaceEmbeddingMat);
-		if (dotProduct > maxMatchConf && dotProduct > mMatchingThreshold)
+		double dbSelfDotProduct = mDBFaceDetails[i].dbSelfDotProduct;
+		double faceSelfDotProduct = embeddingMat.dot(embeddingMat);
+		double cosine_dist = dotProduct / (std::sqrt(dbSelfDotProduct)*std::sqrt(faceSelfDotProduct));
+
+		if (cosine_dist > maxMatchConf && cosine_dist > mMatchingThreshold)
 		{
-			maxMatchConf = dotProduct;
+			maxMatchConf = cosine_dist;
 			maxMatchIdx = i;
 		}
 	}
