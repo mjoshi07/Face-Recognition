@@ -23,6 +23,7 @@ class Face
 		void scanDB(cv::String& imgsPath);
 		void performMatching();
 		std::string getFaceId(cv::Mat& embeddingMat, double embeddingMatSelfDotProduct);
+		double getCosineDistance(double aa, double bb, double ab);
 		void drawFaces(cv::Mat& frame, cv::Scalar bboxColor = cv::Scalar(180, 255, 50));
 
 	private:

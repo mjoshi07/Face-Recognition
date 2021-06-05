@@ -17,7 +17,7 @@ int main()
 	// create a Face class object
 	Face faceObject(data_path, true, false, true);
 
-    	// create video capture object and open video source
+    // create video capture object and open video source
    	cv::VideoCapture cap(video_src);
 	
 	// create opencv Mat object
@@ -56,6 +56,7 @@ int main()
 		}
 		else
 		{
+			// break out of the loop if video has ended, i.e video capture object has closed
 			break;
 		}
 	}
