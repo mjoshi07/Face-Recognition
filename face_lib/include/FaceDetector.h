@@ -49,9 +49,6 @@ class FaceDetector{
 		int mFrameToSkip;
 		std::vector<dlib::correlation_tracker> mDlibTrackerList;
 
-
-
-
 };
 
 #endif

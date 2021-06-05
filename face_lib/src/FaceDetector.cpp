@@ -44,8 +44,13 @@ void FaceDetector::getDetectedRects(cv::Mat & img, std::vector<FaceDetails>& fac
 				{
 					cv::Rect obj_rect = obj.getRect();
 
+					// create dlib correlation tracker object
 					dlib::correlation_tracker corr_tracker;
+
+					// initialize correlation tracker 
 					corr_tracker.start_track(dlib_img, dlib::centered_rect(dlib::point(obj_rect.x + obj_rect.width*0.5, obj_rect.y + obj_rect.height*0.5), obj_rect.width, obj_rect.height));
+					
+					// store the correlation tracker in dlib tracker list
 					mDlibTrackerList.push_back(corr_tracker);
 					faceObject.faceRect = obj_rect;
 					faceObject.faceImg = img(obj_rect);
@@ -59,13 +64,19 @@ void FaceDetector::getDetectedRects(cv::Mat & img, std::vector<FaceDetails>& fac
 			for (dlib::correlation_tracker &corr_track : mDlibTrackerList)
 			{
 				FaceDetails faceObject;
+
+				// update the object rect by correlation tracker 
 				corr_track.update(dlib_img);
+
+				// get object rect in dlib rectangle format
 				dlib::rectangle rect = corr_track.get_position();
 
 				int width = corr_track.get_position().width();
 				int height = corr_track.get_position().height();
 				int x = corr_track.get_position().right() - width;
 				int y = corr_track.get_position().bottom() - height;
+
+				// get object rect in opencv rectangle format
 				cv::Rect rec(x, y, width, height);
 				faceObject.faceRect = rec;
 				faceObject.faceImg = img(rec);
@@ -92,15 +103,22 @@ std::vector<detected_object> FaceDetector::detect(cv::Mat & img)
 		int frameHeight = img.rows;
 		int frameWidth = img.cols;
 
+		// get input blob from image
 		cv::Mat inputBlob = cv::dnn::blobFromImage(img, mScaleFactor, mNetInputSize, mMeanToSubtract, mSwapRB, mCrop);
 
 		mNet.setInput(inputBlob);
+
+		// run a forward pass
 		cv::Mat out = mNet.forward();
 
 		cv::Mat detectionMat(out.size[2], out.size[3], CV_32F, out.ptr<float>());
 
 		for (int i = 0; i < detectionMat.rows; i++)
 		{
+			/*
+				output is of the shape [1,1,N, 7]
+				[image_id, label, conf, x_min, y_min, x_max, _y_max]
+			*/
 			float confidence = detectionMat.at<float>(i, 2);
 
 			if (confidence > mConfidenceThreshold)

@@ -23,7 +23,10 @@ void LoadFaceModel::loadDetectionModel()
 	std::string model_weights = mDataPath + "\\models\\face-detection-retail-0005.bin";
 	std::string model_config = mDataPath + "\\models\\face-detection-retail-0005.xml";
 
+	// read the weights and config file 
 	mDetectionModel = cv::dnn::readNet(model_weights, model_config);
+
+	// set backend as INFERENCE_ENGINE
 	mDetectionModel.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_INFERENCE_ENGINE);
 }
 
@@ -32,7 +35,10 @@ void LoadFaceModel::loadLandmarksModel()
 	std::string model_weights = mDataPath + "\\models\\landmarks-regression-retail-0009.bin";
 	std::string model_config = mDataPath + "\\models\\landmarks-regression-retail-0009.xml";
 
+	// read the weights and config file 
 	mLandmarksModel = cv::dnn::readNet(model_weights, model_config);
+
+	// set backend as INFERENCE_ENGINE
 	mLandmarksModel.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_INFERENCE_ENGINE);
 }
 
@@ -41,7 +47,10 @@ void LoadFaceModel::loadEmbeddingsModel()
 	std::string model_weights = mDataPath + "\\models\\Sphereface.bin";
 	std::string model_config = mDataPath + "\\models\\Sphereface.xml";
 
+	// read the weights and config file 
 	mEmbeddingsModel = cv::dnn::readNet(model_weights, model_config);
+
+	// set backend as INFERENCE_ENGINE
 	mEmbeddingsModel.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_INFERENCE_ENGINE);
 }
 

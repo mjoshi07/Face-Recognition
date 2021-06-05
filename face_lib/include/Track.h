@@ -38,7 +38,7 @@ class Track {
 			}
 			else 
 			{
-				/// update invisible, visible count based on whether measurement was provided
+				// update invisible, visible count based on whether measurement was provided
 				mConsecutiveInvisibleCount++;
 			}
 
@@ -107,19 +107,19 @@ class Track {
 		bool isTrackDead() { return trackDead; }
 
 	protected:
-		cv::Point2d mCurrentCenter;                ///< current prediction or center in case of centroid tracking
-		cv::Rect lastRect;                  ///< last bounding box of the object
+		cv::Point2d mCurrentCenter;					///< current prediction or center in case of centroid tracking
+		cv::Rect lastRect;							///< last bounding box of the object
 
-		std::vector<cv::Point2f> trace{};       ///< trajectory
-		size_t mId;                         ///< id of track
-		unsigned int mConsecutiveInvisibleCount;   ///< consecutive frames for which the track has not been detected
-		unsigned int mTotalVisibleCount;           ///< the total number of frames in which the track was detected(visible)
-		unsigned long  age;                 ///< the number of frames since the track was first detected
+		std::vector<cv::Point2f> trace{};			///< trajectory
+		size_t mId;									///< id of track
+		unsigned int mConsecutiveInvisibleCount;	///< consecutive frames for which the track has not been detected
+		unsigned int mTotalVisibleCount;			///< the total number of frames in which the track was detected(visible)
+		unsigned long  age;							///< the number of frames since the track was first detected
 
-		cv::Point mStartPosition;           ///< initial position where the track started
-		unsigned int mBirthThreshold;       ///< number of frames after which to consider track normal
-		unsigned int mHistorySize;          ///< number of previous measurements to keep
-		unsigned int mMaxSkippedFrames;         ///< if object is invisible for these number of frames then it is considered dead
+		cv::Point mStartPosition;					///< initial position where the track started
+		unsigned int mBirthThreshold;				///< number of frames after which to consider track normal
+		unsigned int mHistorySize;					///< number of previous measurements to keep
+		unsigned int mMaxSkippedFrames;				///< if object is invisible for these number of frames then it is considered dead
 		bool trackDead;
 
 	};
