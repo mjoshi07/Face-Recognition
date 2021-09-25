@@ -2,7 +2,7 @@
 * To run the application, clone the repository and build it using CMake and any generator[VS 2015 used]
 * Should satisfy all dependencies
 * Download the weight files for all the models and paste them where .xml files are present, i.e here [models](/data/models) 
-* Put `.jpg` images **only** inside the faceImages folder, here [faceImages](/data/faceImages)
+* Put `.jpg` images here [faceImages](/data/faceImages)
 * 1 image should contain only 1 face and names of all files should be unique
 * Name of the image file is assigned as the faceId to the face detected in the image
 * No Need to crop the `.jpg` images, application will first detect faces in it and then store the face embeddings from face images
