@@ -24,10 +24,7 @@
 
 ## Dependencies
 * Opencv[4.5.1 and above] built with InferenceEngine backend
-* OpenVino[2021 and above]
-* CMake[3.10 and above]
-* vcpkg [dlib Threads]
-* C++11
+* dlib (for correlation tracker)
 
 ## Test Results
 ![output1](https://user-images.githubusercontent.com/31381335/118119835-9d80c000-b40c-11eb-8d7f-84274952e845.png)
