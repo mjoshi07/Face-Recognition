@@ -7,9 +7,6 @@ set(LIB_NAME "${PROJECT_NAME}")
 
 find_package(OpenCV REQUIRED)
 find_package( dlib REQUIRED )
-if (WIN32)
-    find_package (Threads REQUIRED)
-endif ()
 
 include_directories(
 	${PROJECT_SOURCE_DIR}/include
