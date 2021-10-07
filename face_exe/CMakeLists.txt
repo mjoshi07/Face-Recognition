@@ -7,14 +7,12 @@ set(EXE_NAME "${PROJECT_NAME}")
 
 find_package( OpenCV REQUIRED )
 find_package( dlib REQUIRED )
-find_package ( Threads REQUIRED)
 
 include_directories(
         ${PROJECT_SOURCE_DIR}/include
         ${OpenCV_INCLUDE_DIR}
         ${face_lib_INCLUDE_DIR}
 )
-
 
 file(GLOB_RECURSE HEADER_FILES include/*.h include/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.c src/*.cpp src/*.h src/*.hpp)
